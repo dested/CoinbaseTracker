@@ -1,0 +1,31 @@
+<ion-view view-title="Dashboard">
+    <ion-content class="padding">
+        <div>
+            <div style="font-family: monospace, serif; display:inline-block; width:50%; ">
+                <div ng-repeat="ask in bookView.asks">
+                    {{ask.price}} {{ask.size}}
+                </div>
+                <span>Latest: {{latest.price}} {{latest.size}}</span>
+
+                <div ng-repeat="bid in bookView.bids">
+                    {{bid.price}} {{bid.size}}
+                </div>
+            </div>
+
+            <div style="font-family: monospace, serif; display:inline-block;width:49%; vertical-align:top;">
+                <div ng-repeat="trade in trades">
+                    {{trade.price}} {{trade.size}}
+                </div>
+            </div>
+        </div>
+        <!-- <div ng-repeat="(key, value)  in book.asks | groupBy:'price' | limitTo:20">
+          {{key}} - {{sum(value)}}
+        </div>
+        latest trade: {{latest.price}}
+        <div ng-repeat="(key, value)  in book.bids | groupBy:'price' | limitTo:20">
+          {{key}} - {{sum(value)}}
+        </div> -->
+
+
+    </ion-content>
+</ion-view>
