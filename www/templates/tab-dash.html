@@ -1,20 +1,41 @@
 <ion-view view-title="Dashboard">
     <ion-content class="padding">
         <div>
-            <div style="font-family: monospace, serif; display:inline-block; width:50%; ">
-                <div ng-repeat="ask in bookView.asks">
-                    {{ask.price}} {{ask.size}}
-                </div>
-                <span>Latest: {{latest.price}} {{latest.size}}</span>
+            <style scoped>
+                .bad{color:red;}
+                .good{color:green;}
 
-                <div ng-repeat="bid in bookView.bids">
-                    {{bid.price}} {{bid.size}}
+                .items {
+                    opacity: 1;
+                }
+                .items.ng-enter {
+                    -webkit-transition: 1s;
+                    transition: 1s;
+                    opacity: 0;
+                }
+                .items.ng-enter-active {
+                    opacity: 1;
+                }
+
+
+            </style>
+
+
+            <div style="font-family: monospace, serif; display:inline-block; width:50%; ">
+                <div class="items" ng-repeat="ask in bookView.asks  track by (ask.price+ask.size)">
+                    {{ask.price}} {{ask.size}} ${{ask.total}}
+                </div>
+                <span ng-class="{'bad':trade.bad, 'good':!trade.bad}">Latest: {{latest.price}} {{latest.size}} ${{latest.total}}</span>
+
+                <div class="items" ng-repeat="bid in bookView.bids  track by (bid.price+bid.size)">
+                    {{bid.price}} {{bid.size}} ${{bid.total}}
                 </div>
             </div>
 
+
             <div style="font-family: monospace, serif; display:inline-block;width:49%; vertical-align:top;">
-                <div ng-repeat="trade in trades">
-                    {{trade.price}} {{trade.size}}
+                <div ng-repeat="trade in trades" ng-class="{'bad':trade.bad, 'good':!trade.bad}">
+                    {{trade.price}} {{trade.size}} ${{trade.total}}
                 </div>
             </div>
         </div>

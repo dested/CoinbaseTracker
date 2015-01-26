@@ -18,21 +18,18 @@ angular.module('starter.controllers', [])
             var s = 0;
             for (var i = 0; i < items.length; i++) {
                 var item = items[i];
-                s += item.size;
+                s +=parseFloat( item.size);
             }
             return s;
-        };
+        }
 
         var queuedMessages = [];
 
 
         $http.get('https://api.exchange.coinbase.com/products/BTC-USD/ticker').success(function (data) {
-            $scope.latest = {price: data.price,size:data.size};
+            $scope.latest = {price: data.price, size: data.size, total: (data.size * data.price).toFixed(2).toString()};
             $scope.trades.push($scope.latest);
         });
-
-
-
 
 
         $http.get('https://api.exchange.coinbase.com/products/BTC-USD/book?level=3').success(function (data) {
@@ -103,13 +100,15 @@ angular.module('starter.controllers', [])
             bookView.asks = _asks.slice(-20).map(function (m) {
                 return {
                     price: pad(parseFloat(m.price).toPrecision(10), 16, '0'),
-                    size: pad(parseFloat(m.size).toPrecision(10), 16, '0')
+                    size: pad(parseFloat(m.size).toPrecision(10), 16, '0'),
+                    total: (m.size * m.price).toFixed(2).toString()
                 }
             });
             bookView.bids = _bids.slice(0, 20).map(function (m) {
                 return {
                     price: pad(parseFloat(m.price).toPrecision(10), 16, '0'),
-                    size: pad(parseFloat(m.size).toPrecision(10), 16, '0')
+                    size: pad(parseFloat(m.size).toPrecision(10), 16, '0'),
+                    total: (m.size * m.price).toFixed(2).toString()
                 }
             });
 
@@ -155,18 +154,26 @@ angular.module('starter.controllers', [])
                 case "match":
                     for (var i = 0; i < book.bids.length; i++) {
                         var bid = book.bids[i];
-                        if(bid.order_id==message.maker_order_id || bid.order_id==message.taker_order_id){
-                            book.bids.splice(i,1);
+                        if (bid.order_id == message.maker_order_id || bid.order_id == message.taker_order_id) {
+                            book.bids.splice(i, 1);
                         }
                     }
                     for (var i = 0; i < book.asks.length; i++) {
                         var ask = book.asks[i];
-                        if(ask.order_id==message.maker_order_id || ask.order_id==message.taker_order_id){
-                            book.asks.splice(i,1);
+                        if (ask.order_id == message.maker_order_id || ask.order_id == message.taker_order_id) {
+                            book.asks.splice(i, 1);
                         }
                     }
-                    $scope.latest = {price: message.price,size:message.size};
-                    $scope.trades.splice(0,0,$scope.latest);
+                    $scope.latest = {
+                        price: message.price,
+                        size: message.size,
+                        total: (message.size * message.price).toFixed(2).toString()
+                    };
+
+                    $scope.latest.bad = $scope.trades[0].price >= $scope.latest.price;
+
+                    $scope.trades.splice(0, 0, $scope.latest);
+                    $scope.trades = $scope.trades.slice(0, 20);
                     break;
 
                 default:
@@ -208,31 +215,7 @@ angular.module('starter.controllers', [])
 
 
     })
-
-    .controller('ChatsCtrl', function ($scope, Chats) {
-        $scope.chats = Chats.all();
-        $scope.remove = function (chat) {
-            Chats.remove(chat);
-        }
-    })
-
-    .controller('ChatDetailCtrl', function ($scope, $stateParams, Chats) {
-        $scope.chat = Chats.get($stateParams.chatId);
-    })
-
-    .controller('FriendsCtrl', function ($scope, Friends) {
-        $scope.friends = Friends.all();
-    })
-
-    .controller('FriendDetailCtrl', function ($scope, $stateParams, Friends) {
-        $scope.friend = Friends.get($stateParams.friendId);
-    })
-
-    .controller('AccountCtrl', function ($scope) {
-        $scope.settings = {
-            enableFriends: true
-        };
-    });
+;
 
 
 /**
