@@ -18,7 +18,7 @@ angular.module('starter.controllers', [])
             var s = 0;
             for (var i = 0; i < items.length; i++) {
                 var item = items[i];
-                s +=parseFloat( item.size);
+                s += parseFloat(item.size);
             }
             return s;
         }
@@ -144,12 +144,14 @@ angular.module('starter.controllers', [])
                         items = book.asks;
                     }
 
-                    for (var i = 0; i < items.length; i++) {
-                        if (items[i].order_id == message.order_id) {
-                            items.splice(i, 1);
-                            break;
-                        }
-                    }
+
+                            for (var i = 0; i < items.length; i++) {
+                                if (items[i].order_id == message.order_id) {
+                                    items.splice(i, 1);
+                                    break;
+                                }
+                            }
+
                     break;
                 case "match":
                     for (var i = 0; i < book.bids.length; i++) {
@@ -170,7 +172,15 @@ angular.module('starter.controllers', [])
                         total: (message.size * message.price).toFixed(2).toString()
                     };
 
-                    $scope.latest.bad = $scope.trades[0].price >= $scope.latest.price;
+                    if ($scope.trades[0].price > $scope.latest.price) {
+                        $scope.latest.bad = true;
+                    }
+                    if ($scope.trades[0].price < $scope.latest.price) {
+                        $scope.latest.bad = false;
+                    }
+                    if ($scope.trades[0].price == $scope.latest.price) {
+                        $scope.latest.bad = $scope.trades[0].bad;
+                    }
 
                     $scope.trades.splice(0, 0, $scope.latest);
                     $scope.trades = $scope.trades.slice(0, 20);
@@ -194,7 +204,7 @@ angular.module('starter.controllers', [])
         $scope.items = [];
         exampleSocket.onmessage = function (event) {
             var data = JSON.parse(event.data);
-
+            console.log(data);
             if (book.sequence == 0) {
                 queuedMessages.push(data);
             }
